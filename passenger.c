@@ -317,40 +317,95 @@ passenger *deleteReservation(passenger *root, char pass_id[50])
     return root;
 }
 
-void inorder_traversal(passenger *n)
-{
-    if (n == NULL)
-        return;
-    inorder_traversal(n->left);
-    printf("Name: %s\n", n->name);
-    printf("passenger ID: %s\n", n->id);
-    printf("Boarding Station: %s\n", n->boardingStation);
-    printf("Boarding Train: %s\n", n->boardingTrain);
-    printf("Class Chosen: %s\n", n->Class);
-    printf("Destination Station: %s\n", n->destinationStation);
-    printf("Train ID: %d\n", n->TrainId);
-    printf("Travel Data: %d\n", n->travel_date);
-    printf("Seat Number: %d\n", n->seatNumber);
-    printf("Upgrade Request: %c\n", n->upgrade);
-    printf("Meal Included: %c\n", n->MealIncluded);
-    printf("Reservation Status: %c\n", n->reservationStatus);
-    inorder_traversal(n->right);
+// This function is similar to LVR traversal (inorder traversal) 
+// since we need a sorted output based on travel dates (insertion done based on travel dates)
+
+void SortByTravelDate(passenger* root, char* id){
+    if(!root) return;
+    if(strcmp(root->id, id) > 0) SortByTravelDate(root->left, id);
+    if(strcmp(root->id, id) == 0) { display_details(root); printf("\n"); } 
+    SortByTravelDate(root->right, id);
 }
 
-// passenger *getListDestination(passenger *root, int tid, char *des_station)
-// {
-//     if (strcmp(root->TrainId, tid) > 0 && strcmp(root->destinationStation, des_station) > 0)
-//     {
-//         root->right = getListDestination(root->left, tid, des_station);
-//     }
-// }
+void inorder_traversal(passenger *n)
+{
+    if (n != NULL)
+    {
+        inorder_traversal(n->left);
+        printf("Name: %s\n", n->name);
+        printf("passenger ID: %s\n", n->id);
+        printf("Boarding Station: %s\n", n->boardingStation);
+        printf("Boarding Train: %s\n", n->boardingTrain);
+        printf("Class Chosen: %s\n", n->Class);
+        printf("Destination Station: %s\n", n->destinationStation);
+        printf("Train ID: %d\n", n->TrainId);
+        printf("Travel Data: %d\n", n->travel_date);
+        printf("Seat Number: %d\n", n->seatNumber);
+        printf("Upgrade Request: %c\n", n->upgrade);
+        printf("Meal Included: %c\n", n->MealIncluded);
+        printf("Reservation Status: %c\n\n", n->reservationStatus);
+        inorder_traversal(n->right);
+    }
+}
+
+passenger* add_node(passenger* root, passenger* n){
+    if(!root) return n;
+    if(n->TrainId < root->TrainId){
+        root->left = add_node(root->left, n);
+    }
+    else if(n->TrainId > root->TrainId){
+        root->right = add_node(root->right, n);
+    }
+    else 
+        return root;
+
+    root->NodeHeight = 1+max(NodeHeight(root->left), NodeHeight(root->right));
+    int b = getBalance(root);
+    if (b > 1)
+    {
+        if (getBalance(root->left) >= 0)
+        {
+            root = rightRotate(root);
+        }
+        else if (getBalance(root->left) < 0)
+        {
+            root->left = leftRotate(root->left);
+            root = rightRotate(root);
+        }
+    }
+    else if (b < -1)
+    {
+        if (getBalance(root->right) <= 0)
+        {
+            root = leftRotate(root);
+        }
+        else if (getBalance(root->right) > 0)
+        {
+            root->right = rightRotate(root->right);
+            root = leftRotate(root);
+        }
+    }
+    return root;
+}
+
+passenger *getListDestination(passenger *root, int tid, char *des_station)
+{
+    passenger* new_root = NULL;
+    if(!root) return root;
+    if(root->TrainId > tid && strcmp(root->destinationStation, des_station) > 0){
+        root->left = getListDestination(root->left, tid, des_station);
+    }
+    if(root->TrainId == tid && strcmp(root->destinationStation, des_station) == 0){
+        new_root = add_node(new_root, root);
+    }
+    root->right = getListDestination(root->right, tid, des_station);
+    return new_root;
+}
 
 void preOrder(passenger *n)
 {
     if (n != NULL)
     {
-        // cout << root->key << " ";
-        // display_details(root);
         printf("Name: %s\n", n->name);
         printf("passenger ID: %s\n", n->id);
         printf("Boarding Station: %s\n", n->boardingStation);

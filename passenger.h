@@ -14,7 +14,7 @@ typedef struct avl_node
     int seatNumber;
     char upgrade;
     char MealIncluded;
-    int travel_date; // in the form mmddyy
+    int travel_date;            // in the form mmddyy
     struct avl_node *left;
     struct avl_node *right;
     char reservationStatus;
@@ -24,8 +24,9 @@ typedef struct avl_node
 int NodeHeight(passenger *n);
 passenger *leftRotate(passenger *n);
 passenger *rightRotate(passenger *n);
+void SortByTravelDate(passenger*, char*);
 int getBalance(passenger *n);
-train* ret_train_head();
+train* ret_train_head();                                // Returns the root node of the train database to the main fn
 void display_details(passenger *n);
 passenger *min_id_node(passenger *p);
 passenger *newNode(char name[50], char id[8], char btrain[30], char bstation[40], char Class[10], char dstation[40], int tid, char upgrade, char meal, char age[3], int seat, int date);

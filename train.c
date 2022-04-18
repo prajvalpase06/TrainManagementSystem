@@ -57,10 +57,7 @@ int get_balance(train *n)
     return train_node_height(n->left) - train_node_height(n->right);
 }
 
-train *add_train(train *root, char btrain[], int tid, int date, int pass)
-{
-    if (root == NULL)
-    {
+train* new_train(train* root, char* btrain, int tid, int date, int pass){
         train *new = (train *)malloc(sizeof(train));
         new->train_id = tid;
         strcpy(new->name_of_train, btrain);
@@ -69,6 +66,13 @@ train *add_train(train *root, char btrain[], int tid, int date, int pass)
         new->date_of_travel = date;
         new->num_of_passengers = pass;
         return new;
+}
+
+train *add_train(train *root, char* btrain, int tid, int date, int pass)
+{
+    if (root == NULL)
+    {
+        return new_train(root, btrain, tid, date, pass);
     }
     if (pass < root->num_of_passengers)
     {
@@ -169,6 +173,14 @@ void rangeSearch(train *t, int l, int h)
         display_train(t);
     // call the right subtree of the considered root
     rangeSearch(t->right, l, h);
+}
+
+void inorder_train(train* t){
+    if(!t) return;
+    inorder_train(t->left);
+    display_train(t);
+    printf("\n");
+    inorder_train(t->right);
 }
 
 void SortTrains(train *t)
