@@ -3,19 +3,16 @@
 #include <stdlib.h>
 #include "train.h"
 
-
 int max(int a, int b)
 {
     return (a > b) ? a : b;
 }
 
-char *getid(char* name, char* age)
+char *getid(char *name, char *age)
 {
     strcat(name, age);
     return name;
 }
-
-
 
 int train_node_height(train *n)
 {
@@ -24,7 +21,6 @@ int train_node_height(train *n)
     int retval = n->train_node_height;
     return retval;
 }
-
 
 train *leftRotate_train(train *n)
 {
@@ -61,9 +57,11 @@ int get_balance(train *n)
     return train_node_height(n->left) - train_node_height(n->right);
 }
 
-train* add_train(train* root, char btrain[], int tid, int date, int pass){
-    if(root == NULL){
-        train* new = (train*)malloc(sizeof(train));
+train *add_train(train *root, char btrain[], int tid, int date, int pass)
+{
+    if (root == NULL)
+    {
+        train *new = (train *)malloc(sizeof(train));
         new->train_id = tid;
         strcpy(new->name_of_train, btrain);
         new->train_node_height = 1;
@@ -72,33 +70,36 @@ train* add_train(train* root, char btrain[], int tid, int date, int pass){
         new->num_of_passengers = pass;
         return new;
     }
-    if(pass < root->num_of_passengers){
+    if (pass < root->num_of_passengers)
+    {
         root->left = add_train(root->left, btrain, tid, date, pass);
     }
-    else if(pass > root->num_of_passengers){
+    else if (pass > root->num_of_passengers)
+    {
         root->right = add_train(root->right, btrain, tid, date, pass);
     }
     else
         return root;
 
-    int lheight = train_node_height(root->left); int rheight = train_node_height(root->right);
-    root->train_node_height = 1+max(lheight, rheight);
+    int lheight = train_node_height(root->left);
+    int rheight = train_node_height(root->right);
+    root->train_node_height = 1 + max(lheight, rheight);
     int balance = get_balance(root);
 
     if (balance > 1 && date < root->left->date_of_travel)
         return rightRotate_train(root);
- 
+
     // Right Right Case
     if (balance < -1 && date > root->right->date_of_travel)
         return leftRotate_train(root);
- 
+
     // Left Right Case
     if (balance > 1 && date > root->left->date_of_travel)
     {
-        root->left =  leftRotate_train(root->left);
+        root->left = leftRotate_train(root->left);
         return rightRotate_train(root);
     }
- 
+
     // Right Left Case
     if (balance < -1 && date < root->right->date_of_travel)
     {
@@ -109,26 +110,33 @@ train* add_train(train* root, char btrain[], int tid, int date, int pass){
     return root;
 }
 
-train* check_train_exists(train* t, int tid){
-    if(t->train_id = tid || !t){
+train *check_train_exists(train *t, int tid)
+{
+    if (t->train_id = tid || !t)
+    {
         return t;
     }
 
-    if(tid > t->train_id) return check_train_exists(t->right, tid);
-    if(tid < t->train_id) return check_train_exists(t->left, tid);
-
+    if (tid > t->train_id)
+        return check_train_exists(t->right, tid);
+    if (tid < t->train_id)
+        return check_train_exists(t->left, tid);
 }
 
-train* update_passengers(train* ROOT, int tid){
-    train* t = ROOT;
-    if(ROOT->train_id = tid){
+train *update_passengers(train *ROOT, int tid)
+{
+    train *t = ROOT;
+    if (ROOT->train_id = tid)
+    {
         int temp = ROOT->num_of_passengers;
         temp += 1;
         ROOT->num_of_passengers = temp;
         return t;
     }
-    if(tid > t->train_id) return update_passengers(t->right, tid);
-    if(tid < t->train_id) return update_passengers(t->left, tid);
+    if (tid > t->train_id)
+        return update_passengers(t->right, tid);
+    if (tid < t->train_id)
+        return update_passengers(t->left, tid);
 }
 
 void display_train(train *n)
@@ -149,9 +157,26 @@ train *min_node_train(train *p)
     return curr;
 }
 
-void SortTrains(train* t){
-    if(t == NULL) return;
-    else{
+void rangeSearch(train *t, int l, int h)
+{
+    if (t == NULL)
+        return;
+    // we search the left subtree in this step to get the output in the sorted order
+    if (l < t->train_id)
+        rangeSearch(t->left, l, h);
+    // if we find a node whose train id is within the given range, we display the details of that node
+    if (l <= t->train_id && h >= t->train_id)
+        display_train(t);
+    // call the right subtree of the considered root
+    rangeSearch(t->right, l, h);
+}
+
+void SortTrains(train *t)
+{
+    if (t == NULL)
+        return;
+    else
+    {
         SortTrains(t->left);
         printf("Train Number: %d\t\tTravel Date: %d", t->train_id, t->date_of_travel);
         SortTrains(t->right);
